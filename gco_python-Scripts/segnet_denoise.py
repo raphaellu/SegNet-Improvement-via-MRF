@@ -54,40 +54,27 @@ def select_match(x, unc_w):
     r = x[0]
     g = x[1]
     b = x[2]
-    #if str([r,g,b]) == str([255,69,0]):
-	#print " asdasdasdasd"
     most_matched = color_set[str([r,g,b])]
-    """
-    min_v = 99999
-    for color in color_set:
-        d = sqrt((r-color_set[color][0])**2 + (g-color_set[color][1])**2 + (b-color_set[color][2])**2)
-        if min_v > d:
-            min_v = d
-            most_matched = color
-    """
     res = [0.0 for x in range(0, 11)]
-    if unaries_opt == 1 : 
+    if unaries_opt == 1 :  # check if unary opt flag is on
         res[most_matched] =  10. + 10. * unc_w 
     else:
         res[most_matched] = 10.
-    #if most_matched == 2:
-    #	res[most_matched] = 100.
     return res
 
 def compute_unaries(img_pred, img_uncert):
-    
+    """compute unary potentials"""
     unaries = np.resize(img_pred, (img_pred.shape[0], img_pred.shape[1], 11))
     for x in xrange(img_pred.shape[0]):
 	for y in xrange(img_pred.shape[1]):
-	    unc = img_uncert[x][y]
-	    unc_w = (unc[0]/3.+ unc[1]/3.+ unc[2]/3.) /255.
+	    unc = img_uncert[x][y] # grayscale intensity, ranging from 0 to 255
+	    unc_w = unc/255.
 	    res =  select_match(img_pred[x][y], unc_w)
             unaries[x][y] = res
-            #print res
-    #print unaries
     return unaries
 
 def correct_color(o_res):
+    """convert form [R,G,B] to [R,G,B, 255] for data processing"""
     global color_set
     n_res = np.zeros((o_res.shape[0], o_res.shape[1], 4))
     for x in xrange(o_res.shape[0]):
@@ -97,15 +84,13 @@ def correct_color(o_res):
 
 def img_denoise(unaries_weight, pairwise_weight, img_nu):
     img_prediction = np.asarray(Image.open("before_opt/"+ str(img_nu)  + ".png"))
-    img_uncertain = np.asarray(Image.open("uncertainty/" + str(img_nu) + ".png"))
- 
-    unaries = (10000* unaries_weight * (compute_unaries(img_prediction, img_uncertain) / -10.)).astype(np.int32)
-    #print unaries
-    pairwise = np.eye(unaries.shape[2])*10000
-	
+    # open measure of uncertainty models and grayscale it
+    img_uncertain = np.asarray(Image.open("uncertainty/" + str(img_nu) + ".png").convert('L'))
 
-    pairwise = (pairwise_weight * pairwise)
-    if pairwise_opt == 1:
+    unaries = (10000* unaries_weight * (compute_unaries(img_prediction, img_uncertain) / -10.)).astype(np.int32)
+    pairwise = np.eye(unaries.shape[2])*10000 * pairwise_weight
+   
+    if pairwise_opt == 1: # check if pairwise opt flag is on
         for h in range(0, pairwise.shape[0]):
             for w in range(0, pairwise.shape[1]):
                 if h == w:
@@ -113,65 +98,41 @@ def img_denoise(unaries_weight, pairwise_weight, img_nu):
             for w in range(0, pairwise.shape[1]):
                 pairwise[h][w] = base * pairwise_relation[h][w]
     pairwise = pairwise.astype(np.int32)
-    #print pairwise
     result = cut_simple(unaries, pairwise)
-    #print result
     result = correct_color(result).astype(np.uint8)
-    #"""
+
+    # display images before and after optimization 
+    """
     plt.subplot(121, xticks=(), yticks=())
     plt.imshow(img_prediction, interpolation='nearest')
     plt.subplot(122, xticks=(), yticks=())
     plt.imshow(result, interpolation='nearest')
     plt.show()
-    #"""
+    """
     make_image(result, "after_opt/" + str(img_nu) + ".png")
 
 def make_image(data,outputname):
-    	# data = mpimg.imread(inputname)[:,:,0]
-    	#data = np.arange(1,10).reshape((3, 3))
-    	fig = plt.figure()
-    	#fig.set_size_inches(1, 1)
-    	ax = plt.Axes(fig, [0., 0., 1., 1.])
-    	ax.set_axis_off()
-    	fig.add_axes(ax)
-    	#plt.set_cmap('hot')
-    	ax.imshow(data, aspect = 'normal')
-    	plt.savefig(outputname, dpi = 75)
+    """takes in a numpy array and a path name, saves as an image"""
+    fig = plt.figure()
+    ax = plt.Axes(fig, [0., 0., 1., 1.])
+    ax.set_axis_off()
+    fig.add_axes(ax)
+    ax.imshow(data, aspect = 'normal')
+    plt.savefig(outputname, dpi = 75)
 
 def compute_all(iter, unaries_weight, pairwise_weight):
+    """integrates all methods together: denosies each image; calculates global accuracy,
+       class avg accuracy and MIOU accuracy; calculates the accuracy improvements"""
     for i in range(0, iter):
         print (str(1+i) + "/" + str(iter))
     	img_denoise(unaries_weight, pairwise_weight, i)
     before = calculate_data(iter, "gt/", "before_opt/")
     after = calculate_data(iter, "gt/", "after_opt/")
     print (str(iter) + " "  + str(unaries_weight) + " " + str(pairwise_weight) + " " + str(after[0][0] - before[0][0]) + " " + str(after[0][1] - before[0][1]) + " " + str(after[0][2] - before[0][2]))
-    for i in range(0, len(after[1])):
-	print (str(before[1][i][0]) + " " + str(before[1][i][1])) 	
-	print (str(after[1][i][0]) + " " + str(after[1][i][1]))   	
+#    for i in range(0, len(after[1])):
+#	print (str(before[1][i][0]) + " " + str(before[1][i][1])) 	
+#	print (str(after[1][i][0]) + " " + str(after[1][i][1]))   	
 
-
-#a = 500
-#while ( a< 2000) : 
-#    compute_all(3, a, -1000)
-#    a += 50
-
-compute_all(1, 800, -1000) 
-pairwise_opt = 1
-compute_all(1, 800, -1000) 
-#compute_all(5, 750, -1000) 
-
-#pairwise_opt = 0
-#a = 500
-#while ( a< 2000) : 
-#    compute_all(233, a, -1000)
-#    a += 50
-
-#compute_all(3, 5, -10)
-#compute_all(1, 10, -8)
-#pairwise_opt = 0
-#compute_all(1, 10, -8)
-#compute_all(3, 10, -12)
-
-#compute_all(5, 10, -15)
-#unaries_opt = 1
-#compute_all(5, 10, -15)
+compute_all(5, 800, -1000) 
+unaries_opt = 1 
+compute_all(5, 800, -1000) 
