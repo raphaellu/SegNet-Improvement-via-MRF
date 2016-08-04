@@ -45,7 +45,7 @@ color_set_str = {
 
 
 unaries_opt = 0
-pairwise_opt = 0
+pairwise_opt = 1
 
 def select_match(x, unc_w):
     global unaries_opt
@@ -102,13 +102,13 @@ def img_denoise(unaries_weight, pairwise_weight, img_nu):
     result = correct_color(result).astype(np.uint8)
 
     # display images before and after optimization 
-    """
+    #"""
     plt.subplot(121, xticks=(), yticks=())
     plt.imshow(img_prediction, interpolation='nearest')
     plt.subplot(122, xticks=(), yticks=())
     plt.imshow(result, interpolation='nearest')
     plt.show()
-    """
+    #"""
     make_image(result, "after_opt/" + str(img_nu) + ".png")
 
 def make_image(data,outputname):
@@ -132,7 +132,4 @@ def compute_all(iter, unaries_weight, pairwise_weight):
 #    for i in range(0, len(after[1])):
 #	print (str(before[1][i][0]) + " " + str(before[1][i][1])) 	
 #	print (str(after[1][i][0]) + " " + str(after[1][i][1]))   	
-
-compute_all(5, 800, -1000) 
-unaries_opt = 1 
-compute_all(5, 800, -1000) 
+compute_all(233, 800, -1000) 

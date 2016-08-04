@@ -20,22 +20,47 @@ str((11, 11, 11)):11
 
 pairs = [[0.0 for y in range(0, len(color_set))] for x in range(0, len(color_set))]
 
+def increase_count(w, h, nw, nh, road_px, img_px):
+    global pairs, color_set
+    road_col = road_px[w,h][:3]
+    nroad_col = road_px[nw,nh][:3]
+    gt_col = color_set[str(img_px[w,h][:3])]
+    ngt_col = color_set[str(img_px[nw,nh][:3])]
+    # if road pair is the same and gt pair is the same
+    if str(road_col) == str(nroad_col) and str(gt_color) == str(ngt_col):
+        pairs[ngt_col][gt_col] += 1.
+    # if road pair is different and gt pair is different
+    if str(road_col) != str(nroad_col) and str(gt_color) != str(ngt_col):
+        pairs[ngt_col][gt_col] += 1.
+    # if road pair is the same and gt pair is different, or if road pair is 
+    # different and gt pair is the same, do nothing.
+    return
+
+
+
 for i in range(0,367):
     print i
     img = Image.open("gt_train/" + str(i) + ".png" )
+    road = Image.open("road_scene/" + str(i) + ".png")
     img_px = img.load()
+    road_px = road.load()
     (width, height) = img.size
     for w in range(0, width):
 	for h in range(0, height):
 	    gt_color = img_px[w,h][:3]
+            road_color = road_px[w,h][:3]
 	    if w-1 >= 0:
-		    pairs[color_set[str(img_px[w-1, h][:3])]][color_set[str(gt_color)]] += 1.
+		    #pairs[color_set[str(img_px[w-1, h][:3])]][color_set[str(gt_color)]] += 1.
+                    increase_count(w,h, w-1,h, road_px, img_px)
             if w+1 < width:
-		    pairs[color_set[str(img_px[w+1, h][:3])]][color_set[str(gt_color)]] += 1.
+		    #pairs[color_set[str(img_px[w+1, h][:3])]][color_set[str(gt_color)]] += 1.
+                    increase_count(w,h, w+1,h, road_px, img_px)
             if h-1 >= 0:
-		    pairs[color_set[str(img_px[w, h-1][:3])]][color_set[str(gt_color)]] += 1.
+		    #pairs[color_set[str(img_px[w, h-1][:3])]][color_set[str(gt_color)]] += 1.
+                    increase_count(w,h, w,h-1, road_px, img_px)
             if h+1 < height:
-		    pairs[color_set[str(img_px[w, h+1][:3])]][color_set[str(gt_color)]] += 1.
+		    #pairs[color_set[str(img_px[w, h+1][:3])]][color_set[str(gt_color)]] += 1.
+                    increase_count(w,h, w,h+1, road_px, img_px)
 print "===== original ========="
 for row in pairs:
     print row
