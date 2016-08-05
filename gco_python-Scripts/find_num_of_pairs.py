@@ -36,6 +36,22 @@ def increase_count(w, h, nw, nh, road_px, img_px):
     # different and gt pair is the same, do nothing.
     return
 
+# opposite to increase_count. only increase the count if road pair is the 
+# same and pt pair is different, or if road pair is different and pt pair is the same.
+def increase_count_reverse(w, h, nw, nh, road_px, img_px):
+    global pairs, color_set
+    road_col = road_px[w,h][:3]
+    nroad_col = road_px[nw,nh][:3]
+    gt_col = color_set[str(img_px[w,h][:3])]
+    ngt_col = color_set[str(img_px[nw,nh][:3])]
+    # if road pair is the same and gt pair is the same
+    if str(road_col) != str(nroad_col) and str(gt_color) == str(ngt_col):
+        pairs[ngt_col][gt_col] += 1.
+    # if road pair is different and gt pair is different
+    if str(road_col) == str(nroad_col) and str(gt_color) != str(ngt_col):
+        pairs[ngt_col][gt_col] += 1.
+    return
+
 
 
 for i in range(0,233):
@@ -50,17 +66,17 @@ for i in range(0,233):
 	    gt_color = img_px[w,h][:3]
             road_color = road_px[w,h][:3]
 	    if w-1 >= 0:
-		    #pairs[color_set[str(img_px[w-1, h][:3])]][color_set[str(gt_color)]] += 1.
-                    increase_count(w,h, w-1,h, road_px, img_px)
+                    #increase_count(w,h, w-1,h, road_px, img_px)
+                    increase_count_reverse(w,h, w-1,h, road_px, img_px)
             if w+1 < width:
-		    #pairs[color_set[str(img_px[w+1, h][:3])]][color_set[str(gt_color)]] += 1.
-                    increase_count(w,h, w+1,h, road_px, img_px)
+                    #increase_count(w,h, w+1,h, road_px, img_px)
+                    increase_count_reverse(w,h, w+1,h, road_px, img_px)
             if h-1 >= 0:
-		    #pairs[color_set[str(img_px[w, h-1][:3])]][color_set[str(gt_color)]] += 1.
-                    increase_count(w,h, w,h-1, road_px, img_px)
+                    #increase_count(w,h, w,h-1, road_px, img_px)
+                    increase_count_reverse(w,h, w,h-1, road_px, img_px)
             if h+1 < height:
-		    #pairs[color_set[str(img_px[w, h+1][:3])]][color_set[str(gt_color)]] += 1.
-                    increase_count(w,h, w,h+1, road_px, img_px)
+                    #increase_count(w,h, w,h+1, road_px, img_px)
+                    increase_count_reverse(w,h, w,h+1, road_px, img_px)
 print "===== original ========="
 for row in pairs:
     print row
