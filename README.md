@@ -5,6 +5,11 @@ Note that file paths in this repository do not reflect the actual paths they are
 
 Refer to inline comments in files for more details. 
 
+####dependencies required to run pre-configured docker image (remote access):
+* X-11
+* docker
+
+then run: `nvidia-docker run -it --net=host --rm -e DISPLAY=$DISPLAY -v ~/:/home/data -v "$HOME/.Xauthority:/root/.Xauthority:rw" yasumat/caffe-segnet:cython /bin/bash`
 
 ####The following files are main files that may be reused:
 1. `SegNet-Scripts/compute_test_result.py`: calculates global accuracy, class average accuracy and MIOU accuracy for a set of outputs.
