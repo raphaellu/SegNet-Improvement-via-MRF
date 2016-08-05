@@ -102,13 +102,13 @@ def img_denoise(unaries_weight, pairwise_weight, img_nu):
     result = correct_color(result).astype(np.uint8)
 
     # display images before and after optimization 
-    #"""
+    """
     plt.subplot(121, xticks=(), yticks=())
     plt.imshow(img_prediction, interpolation='nearest')
     plt.subplot(122, xticks=(), yticks=())
     plt.imshow(result, interpolation='nearest')
     plt.show()
-    #"""
+    """
     make_image(result, "after_opt/" + str(img_nu) + ".png")
 
 def make_image(data,outputname):

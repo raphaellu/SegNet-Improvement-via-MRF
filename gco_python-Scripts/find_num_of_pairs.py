@@ -38,10 +38,10 @@ def increase_count(w, h, nw, nh, road_px, img_px):
 
 
 
-for i in range(0,367):
+for i in range(0,233):
     print i
-    img = Image.open("gt_train/" + str(i) + ".png" )
-    road = Image.open("road_scene/" + str(i) + ".png")
+    img = Image.open("after_opt/" + str(i) + ".png" )
+    road = Image.open("road_scene_test/" + str(i) + ".png")
     img_px = img.load()
     road_px = road.load()
     (width, height) = img.size
