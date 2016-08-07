@@ -3,6 +3,10 @@ import matplotlib.image as mpimg
 import numpy as np
 from PIL import Image
 from copy import deepcopy
+
+# for generating pairwise potentials weights table
+# dictionary key is rgb value of the label 
+# dictionary value is the index of that label in the table
 color_set = {
 str((128,64,128)) : 0, 
 str((128,0,0)) : 1, 
@@ -18,65 +22,47 @@ str((0, 128, 192)) : 10,
 str((11, 11, 11)):11
 }
 
+# 2-D array of the same width and height (12), with all values initialized to 0.0
 pairs = [[0.0 for y in range(0, len(color_set))] for x in range(0, len(color_set))]
 
-def increase_count(w, h, nw, nh, road_px, img_px):
+def increase_count(w, h, nw, nh, img_px):
+    """increases count for pairs of labels
+       PARAMETER(s):
+          w : x-position for pixel 1
+          h : y-position for pixel 1          
+          nw : x-position for pixel 2
+          nh : y-position for pixel 2
+          img_px : pixel matrix of ground truth image
+       RETURN:
+          no return value
+    """
     global pairs, color_set
-    road_col = road_px[w,h][:3]
-    nroad_col = road_px[nw,nh][:3]
     gt_col = color_set[str(img_px[w,h][:3])]
     ngt_col = color_set[str(img_px[nw,nh][:3])]
-    # if road pair is the same and gt pair is the same
-    if str(road_col) == str(nroad_col) and str(gt_color) == str(ngt_col):
-        pairs[ngt_col][gt_col] += 1.
-    # if road pair is different and gt pair is different
-    if str(road_col) != str(nroad_col) and str(gt_color) != str(ngt_col):
-        pairs[ngt_col][gt_col] += 1.
-    # if road pair is the same and gt pair is different, or if road pair is 
-    # different and gt pair is the same, do nothing.
-    return
-
-# opposite to increase_count. only increase the count if road pair is the 
-# same and pt pair is different, or if road pair is different and pt pair is the same.
-def increase_count_reverse(w, h, nw, nh, road_px, img_px):
-    global pairs, color_set
-    road_col = road_px[w,h][:3]
-    nroad_col = road_px[nw,nh][:3]
-    gt_col = color_set[str(img_px[w,h][:3])]
-    ngt_col = color_set[str(img_px[nw,nh][:3])]
-    # if road pair is the same and gt pair is the same
-    if str(road_col) != str(nroad_col) and str(gt_color) == str(ngt_col):
-        pairs[ngt_col][gt_col] += 1.
-    # if road pair is different and gt pair is different
-    if str(road_col) == str(nroad_col) and str(gt_color) != str(ngt_col):
-        pairs[ngt_col][gt_col] += 1.
-    return
-
+    pairs[ngt_col][gt_col] += 1.
+   
 
 
 for i in range(0,233):
     print i
-    img = Image.open("after_opt/" + str(i) + ".png" )
-    road = Image.open("road_scene_test/" + str(i) + ".png")
+    img = Image.open("gt/" + str(i) + ".png" )
     img_px = img.load()
-    road_px = road.load()
     (width, height) = img.size
     for w in range(0, width):
-	for h in range(0, height):
-	    gt_color = img_px[w,h][:3]
+        for h in range(0, height):
+            gt_color = img_px[w,h][:3]
             road_color = road_px[w,h][:3]
-	    if w-1 >= 0:
-                    #increase_count(w,h, w-1,h, road_px, img_px)
-                    increase_count_reverse(w,h, w-1,h, road_px, img_px)
+            if w-1 >= 0:
+                increase_count(w,h, w-1,h, img_px)
             if w+1 < width:
-                    #increase_count(w,h, w+1,h, road_px, img_px)
-                    increase_count_reverse(w,h, w+1,h, road_px, img_px)
+                increase_count(w,h, w+1,h, img_px)
             if h-1 >= 0:
-                    #increase_count(w,h, w,h-1, road_px, img_px)
-                    increase_count_reverse(w,h, w,h-1, road_px, img_px)
+                increase_count(w,h, w,h-1, img_px)
             if h+1 < height:
-                    #increase_count(w,h, w,h+1, road_px, img_px)
-                    increase_count_reverse(w,h, w,h+1, road_px, img_px)
+                increase_count(w,h, w,h+1, img_px)
+
+# For the explanation of the following four tables, please refer to research report section 4.4.2                
+# please also delete the last column and the last row of the final result (printed after "====== final ======")
 print "===== original ========="
 for row in pairs:
     print row
