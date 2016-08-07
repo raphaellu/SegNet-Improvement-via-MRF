@@ -32,6 +32,9 @@ use this docker image by using the following command: `nvidia-docker run -it --n
 # Usage: (check official tutorial as well: http://mi.eng.cam.ac.uk/projects/segnet/tutorial.html)
     python /SegNet/Scripts/test_bayesian_segnet.py --model /SegNet/Models/bayesian_segnet_inference.prototxt --weights /SegNet/Models/Inference/test_weights.caffemodel --colours /SegNet/Scripts/camvid11.png --data /SegNet/CamVid/test.txt  # Test Bayesian SegNet
     python /SegNet/Scripts/test_bayesian_segnet.py --model /SegNet/Models/bayesian_segnet_basic_inference.prototxt --weights /SegNet/Models/Inference/test_weights.caffemodel --colours /SegNet/Scripts/camvid11.png --data /SegNet/CamVid/test.txt  # Test Bayesian SegNet Basic
+# ground truth images will be saved in gt/ 
+# prediction images will be saved in precitions/
+# uncertainty images will be saved in uncertainty/ 
 ```
 
 3.`SegNet-Scripts/test_segmentation_camvid.py`: modified version which saves prediction images in a folder.
@@ -40,14 +43,16 @@ use this docker image by using the following command: `nvidia-docker run -it --n
 # Usage:
     python /SegNet/Scripts/test_segmentation_camvid.py --model /SegNet/Models/segnet_inference.prototxt --weights /SegNet/Models/Inference/test_weights.caffemodel --iter 233  # Test SegNet
     python /SegNet/Scripts/test_segmentation_camvid.py --model /SegNet/Models/segnet_basic_inference.prototxt --weights /SegNet/Models/Inference/test_weights.caffemodel --iter 233  # Test SegNetBasic
-# ground truth images will be saved in gt/ and prediction images will be saved in precitions/
+# ground truth images will be saved in gt/ 
+# prediction images will be saved in precitions/
 ```
 
 4.`gco_python-Scripts/segnet_denoise.py`: applies pairwise MRF on top of CNN outputs.
 ```python
 # Place this file in gco_python/ :
 # Usage:
-  
+    from segnet_denoise import compute_all
+    compute_all(233, 800, -1000) # 233:number of images to optimize, 800:unary potential weight, -1000:pairwise potential weight
 ```
 
 
