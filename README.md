@@ -21,7 +21,8 @@ Other dependencies:
 * [SegNet](https://github.com/alexgkendall/SegNet-Tutorial) 
 * [gco_python](https://github.com/amueller/gco_python)
 
-
+##Documentation:
+`research_report.pdf`: complete report of this research.
 
 ###Main files that may be reused:
 1.`SegNet-Scripts/compute_test_result.py`: calculates global accuracy, class average accuracy and MIOU accuracy for a set of outputs.
@@ -90,3 +91,4 @@ __these files were highly customized for specific purpose so they may not be use
 7. `SegNet-Scripts/rename.sh`: renames all files in a folder to `number.png`. `number` starts from 0. 
 8. `SegNet-Scripts/run_test.sh`: a simple script to run my time-consuming tests overnight.
 9. `gco_python-Scripts/data_prev.py`: stores the experimental pairwise potentials weight matrices. (with rgb optimization) Deprecated since improvements were low.
+10. `note.txt`: my random notes.
