@@ -22,7 +22,7 @@ Other dependencies:
 * [gco_python](https://github.com/amueller/gco_python)
 
 ##Documentation:
-`research_report.pdf`: complete report of this research.
+`report_v3.1.pdf`: Report of this research. Not completed yet but should be informative enough.
 
 ###Main files that may be reused:
 1.`SegNet-Scripts/compute_test_result.py`: calculates global accuracy, class average accuracy and MIOU accuracy for a set of outputs.
