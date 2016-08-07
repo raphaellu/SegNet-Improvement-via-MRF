@@ -12,10 +12,16 @@ The following dependencies are required to run pre-configured docker image (remo
 
 * X-11
 * docker
-* [gco_python](https://github.com/amueller/gco_python)
 
 To remotely access the computer with GPU support, __enable X forwarding first__, then
 use this docker image by using the following command: `nvidia-docker run -it --net=host --rm -e DISPLAY=$DISPLAY -v "$HOME/.Xauthority:/root/.Xauthority:rw" yasumat/caffe-segnet:cython /bin/bash`
+
+Other dependencies:
+
+* [SegNet](https://github.com/alexgkendall/SegNet-Tutorial) 
+* [gco_python](https://github.com/amueller/gco_python)
+
+
 
 ###Main files that may be reused:
 1.`SegNet-Scripts/compute_test_result.py`: calculates global accuracy, class average accuracy and MIOU accuracy for a set of outputs.
@@ -53,6 +59,12 @@ use this docker image by using the following command: `nvidia-docker run -it --n
 # Usage:
     from segnet_denoise import compute_all
     compute_all(233, 800, -1000) # 233:number of images to optimize, 800:unary potential weight, -1000:pairwise potential weight
+    
+# please change line 9 accordingly in order to import compute_test_result.py
+# based on your own need, you can change the file paths for :
+# 1. unoptimized output images and uncertainty images accordingly in line 115 & 117
+# 2. saved optimized output images in line 147 
+# 3. ground truth images as input in line 177 & 178 
 ```
 
 
