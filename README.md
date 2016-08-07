@@ -72,8 +72,13 @@ Other dependencies:
 
 __dependencies of `4. gco_python-Scripts/segnet_denoise.py`:__
 
-2. `gco_python-Scripts/data.py`: stores the pairwise potentials weight matrix. 
-3. `gco_python-Scripts/find_num_of_pairs.py`: produces data in `data.py` (counts num of all possible pairs on images then generated the pairwise potentials weight matrix.)
+1. `gco_python-Scripts/data.py`: stores the pairwise potentials weight matrix. 
+2. `gco_python-Scripts/find_num_of_pairs.py`: produces data in `data.py` (counts num of all possible pairs on images then generated the pairwise potentials weight matrix.)
+```shell
+# Usage:
+    python find_num_of_pairs
+# you will need to change the file path for ground truth images on line 48 accordingly.
+```
 
 _*More details about how to use this matrix are mentioned in `gco_python-Scripts/find_num_of_pairs.py`._
 
